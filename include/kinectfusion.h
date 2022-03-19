@@ -7,28 +7,22 @@
 #include "data_types.h"
 
 namespace kinectfusion {
-    /*
-     *
-     * \brief This is the KinectFusion pipeline that processes incoming frames and fuses them into one volume
-     *
-     * It implements the basic four steps described in the KinectFusion paper:
-     * (1) Surface Measurement: Compute vertex and normal maps and their pyramids
-     * (2) Pose Estimation: Use ICP with measured depth and predicted surface to localize camera
-     * (3) Surface reconstruction: Integration of surface measurements into a global volume
-     * (4) Surface prediction: Raycast volume in order to compute a surface prediction
-     *
-     * After construction, the pipeline allows you to insert new frames consisting of depth and color.
-     * In the end, you can export the internal volume either as a pointcloud or a dense surface mesh.
-     * You can also export the camera poses and (depending on your configuration) visualize the last model frame.
-     *
-     */
+    /********************************************************************************************************
+     * @brief 这里是KinectFusion运行的整体Pipeline. 对输入的视觉帧处理并将它正和岛同一个Volume中去.
+     * 这里便是论文当中所描述的主要四个步骤：
+     *  （1）表面测量：计算顶点图和深度图和它们对应的多层金字塔.
+     *  （2）位姿观测：用测量得到深度图和反向投影得到的深度图通过ICP的方式来进行位姿配准.
+     *   (3) 表面重建：将表面测量融合到整体Volume中.
+     *   (4) 表面预测：通过反向投影（RayCasting）的方式得到预测得到的表面.
+     * 重建完成后，可以输出整个重建效果.
+     ********************************************************************************************************/
     class Pipeline {
     public:
-        /**
-         * Constructs the pipeline, sets up the interal volume and camera.
-         * @param _camera_parameters The \ref{CameraParameters} that you want this pipeline to use
-         * @param _configuration The \ref{GlobalConfiguration} with all parameters the pipeline should use
-         */
+        /*******************************************************
+         *  @brief 构建整体流程，设置了整体的模型volume和相机参数
+         *  @param _camera_parameters: 整个流程用到的相机参数
+         *  @param _configuration:     整个流程中用到的所有参数
+         *******************************************************/
         Pipeline(const CameraParameters _camera_parameters,
                  const GlobalConfiguration _configuration);
 
@@ -40,6 +34,13 @@ namespace kinectfusion {
          * @param color_map The RGB color map. Must be a matrix (datatype CV_8UC3)
          * @return Whether the frame has been fused successfully. Will only be false if the ICP failed.
          */
+
+        /*****************************************************************************************
+         * @brief 对所有想放到整体volume中的图像帧进行处理.
+         * @param depth_map 当前帧对应的深度图,这里必须将所有的depth值单位转换成mm,float类型.
+         * @param color_map 颜色图，必须是个矩阵.
+         * @return 只有当ICP解算位姿的错的时候，才会返回false，否则无论是否整合到global volume中，都是返回true.
+         *****************************************************************************************/
         bool process_frame(const cv::Mat_<float>& depth_map, const cv::Mat_<cv::Vec3b>& color_map);
 
         /**
@@ -52,6 +53,10 @@ namespace kinectfusion {
          * Use this to get a visualization of the last raycasting
          * @return The last (colorized) model frame from raycasting the internal volume
          */
+        /*****************************************
+         * @brief 这里是对raycast后的结果进行可视化
+         * @param 这里是最后颜色模型的反向投影
+         ******************************************/
         cv::Mat get_last_model_frame() const;
 
         /**
@@ -64,6 +69,10 @@ namespace kinectfusion {
          * Extract a dense surface mesh
          * @return A SurfaceMesh representation (see description of SurfaceMesh for more information on the data layout)
          */
+        /*********************************************
+         * @brief 抽取出来稠密表面
+         * @return 返回mesh的表面，更多的信息在data layout里面
+         *******************************************/
         SurfaceMesh extract_mesh() const;
 
     private:
@@ -72,9 +81,11 @@ namespace kinectfusion {
         const GlobalConfiguration configuration;
 
         // The global volume (containing tsdf and color)
+        /// 这里是global volume的值，用来保存tsdf和颜色
         internal::VolumeData volume;
 
         // The model data for the current frame
+        /// 对于当前帧的整体数据
         internal::ModelData model_data;
 
         // Poses: Current and all previous
