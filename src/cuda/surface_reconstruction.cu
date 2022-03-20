@@ -50,6 +50,7 @@ namespace kinectfusion {
                             1.f);
                     const float lambda = xylambda.norm();
 
+                    // 这里是SDF计算方法，论文6-9的公式
                     const float sdf = (-1.f) * ((1.f / lambda) * camera_pos.norm() - depth);
 
                     if (sdf >= -truncation_distance) {
