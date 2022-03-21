@@ -9,6 +9,7 @@ using cv::cuda::GpuMat;
 
 namespace kinectfusion {
 
+    // 初始化
     Pipeline::Pipeline(const CameraParameters _camera_parameters,
                        const GlobalConfiguration _configuration) :
             camera_parameters(_camera_parameters), configuration(_configuration),
@@ -25,7 +26,7 @@ namespace kinectfusion {
 
     bool Pipeline::process_frame(const cv::Mat_<float>& depth_map, const cv::Mat_<cv::Vec3b>& color_map)
     {
-        // STEP 1: Surface measurement
+        /// STEP 1:  表面观测
         internal::FrameData frame_data = internal::surface_measurement(depth_map, camera_parameters,
                                                                        configuration.num_levels,
                                                                        configuration.depth_cutoff_distance,

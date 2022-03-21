@@ -63,6 +63,7 @@ namespace kinectfusion {
                 normal_map.ptr(y)[x] = make_float3(normal.x(), normal.y(), normal.z());
             }
 
+            /// 计算顶点图
             void compute_vertex_map(const GpuMat& depth_map, GpuMat& vertex_map, const float depth_cutoff,
                                     const CameraParameters cam_params)
             {
@@ -74,6 +75,7 @@ namespace kinectfusion {
                 cudaThreadSynchronize();
             }
 
+            /// 计算法向图
             void compute_normal_map(const GpuMat& vertex_map, GpuMat& normal_map)
             {
                 dim3 threads(32, 32);

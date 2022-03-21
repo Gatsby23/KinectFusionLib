@@ -203,6 +203,7 @@ namespace kinectfusion {
                 dim3 blocks((model_vertex.cols + threads.x - 1) / threads.x,
                             (model_vertex.rows + threads.y - 1) / threads.y);
 
+                // 反向投影生成对应的vertexmap和normalmap.
                 raycast_tsdf_kernel<<<blocks, threads>>>(volume.tsdf_volume, volume.color_volume,
                         model_vertex, model_normal, model_color,
                         volume.volume_size, volume.voxel_scale,

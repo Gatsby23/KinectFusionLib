@@ -89,10 +89,12 @@ namespace kinectfusion {
         internal::ModelData model_data;
 
         // Poses: Current and all previous
+        /// 当前帧的位姿和之前的位姿
         Eigen::Matrix4f current_pose;
         std::vector<Eigen::Matrix4f> poses;
 
         // Frame ID and raycast result for output purposes
+        /// 反向投影得到的图像（用于匹配）
         size_t frame_id;
         cv::Mat last_model_frame;
     };
