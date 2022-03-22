@@ -9,7 +9,7 @@ using cv::cuda::GpuMat;
 
 namespace kinectfusion {
 
-    // 初始化
+    // KinectFusion流程
     Pipeline::Pipeline(const CameraParameters _camera_parameters,
                        const GlobalConfiguration _configuration) :
             camera_parameters(_camera_parameters), configuration(_configuration),
@@ -18,6 +18,7 @@ namespace kinectfusion {
             current_pose{}, poses{}, frame_id{0}, last_model_frame{}
     {
         // The pose starts in the middle of the cube, offset along z by the initial depth
+        // 这里不知道是为什么？
         current_pose.setIdentity();
         current_pose(0, 3) = _configuration.volume_size.x / 2 * _configuration.voxel_scale;
         current_pose(1, 3) = _configuration.volume_size.y / 2 * _configuration.voxel_scale;
@@ -33,6 +34,9 @@ namespace kinectfusion {
                                                                        configuration.bfilter_kernel_size,
                                                                        configuration.bfilter_color_sigma,
                                                                        configuration.bfilter_spatial_sigma);
+        // 对保存的数据进行颜色补充
+        // 妈的，实际上颜色没啥用，就是用来更新纹理，让纹理看上去更好看
+        // （可以考虑超哥推荐的颜色ICP，说不定能更稳定）
         frame_data.color_pyramid[0].upload(color_map);
 
         // STEP 2: Pose estimation
@@ -49,6 +53,7 @@ namespace kinectfusion {
         poses.push_back(current_pose);
 
         // STEP 3: Surface reconstruction
+        // STEP 3: 这里是表面重建结果->IntegrateVolume
         internal::cuda::surface_reconstruction(frame_data.depth_pyramid[0], frame_data.color_pyramid[0],
                                                volume, camera_parameters, configuration.truncation_distance,
                                                current_pose.inverse());
@@ -127,6 +132,9 @@ namespace kinectfusion {
         }
     }
 
+    /***************************************************************************
+     * @brief  这里是导出纹理数据（还是挺重要的）
+     ***************************************************************************/
     void export_ply(const std::string& filename, const SurfaceMesh& surface_mesh)
     {
         std::ofstream file_out { filename };

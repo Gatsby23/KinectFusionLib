@@ -10,10 +10,17 @@ namespace kinectfusion {
     namespace internal {
         namespace cuda {
 
+            /****************************************************************************************
+             * @brief global是kernel函数，可从CPU出调用（调用用<<<>>>语法来配置并行化参数）
+               @param depth_map 应该是GPU上的depth_map的指针
+               @param vertex_map 应该是GPU上的vertex_map指针
+               @param depth_cutoff 应该是是对深度值进行过滤（超过的部分不看了？）
+             ****************************************************************************************/
             __global__
             void kernel_compute_vertex_map(const PtrStepSz<float> depth_map, PtrStep<float3> vertex_map,
                                            const float depth_cutoff, const CameraParameters cam_params)
             {
+                // 这个blockIdx,blockDim,threadId分别指的是什么呢？
                 const int x = blockIdx.x * blockDim.x + threadIdx.x;
                 const int y = blockIdx.y * blockDim.y + threadIdx.y;
 
@@ -21,8 +28,10 @@ namespace kinectfusion {
                     return;
 
                 float depth_value = depth_map.ptr(y)[x];
+                // 哦哦，超过的部分就不看了？
                 if (depth_value > depth_cutoff) depth_value = 0.f; // Depth cutoff
 
+                // 这里就是计算vertex map的方法
                 Vec3fda vertex(
                         (x - cam_params.principal_x) * depth_value / cam_params.focal_x,
                         (y - cam_params.principal_y) * depth_value / cam_params.focal_y,
@@ -31,6 +40,10 @@ namespace kinectfusion {
                 vertex_map.ptr(y)[x] = make_float3(vertex.x(), vertex.y(), vertex.z());
             }
 
+
+            /*******************************************************************************************
+             * @brief 这里是法向量图的相关计算函数
+             *******************************************************************************************/
             __global__
             void kernel_compute_normal_map(const PtrStepSz<float3> vertex_map, PtrStep<float3> normal_map)
             {
@@ -67,11 +80,14 @@ namespace kinectfusion {
             void compute_vertex_map(const GpuMat& depth_map, GpuMat& vertex_map, const float depth_cutoff,
                                     const CameraParameters cam_params)
             {
+                // 这里是cuda的计算线程吧？
                 dim3 threads(32, 32);
+                // 这里应该是说明怎么来讲图像分割成32个线程来计算
                 dim3 blocks((depth_map.cols + threads.x - 1) / threads.x, (depth_map.rows + threads.y - 1) / threads.y);
 
                 kernel_compute_vertex_map << < blocks, threads >> > (depth_map, vertex_map, depth_cutoff, cam_params);
 
+                // 停止CPU端的线程执行，知道GPU执行完所有的CUDA任务
                 cudaThreadSynchronize();
             }
 

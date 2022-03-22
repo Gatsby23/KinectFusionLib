@@ -10,6 +10,9 @@ namespace kinectfusion {
     namespace internal {
         namespace cuda {
 
+           /*********************************************************************************
+            * @brief 这里就是SDF整合进去，但是有点没明白就是Eigen::DontAlign，这个是用来做啥的
+            **********************************************************************************/
             __global__
             void update_tsdf_kernel(const PtrStepSz<float> depth_image, const PtrStepSz<uchar3> color_image,
                                     PtrStepSz<short2> tsdf_volume, PtrStepSz<uchar3> color_volume,
@@ -91,6 +94,11 @@ namespace kinectfusion {
             }
 
 
+ 
+            /************************************************************************
+             * @brief 这里是针对表面重建，integrate_to_volume来做
+               @param model_view是啥，这个是用来做反向投影的，但是具体怎么设置，怎么用的呢？
+             *************************************************************************/ 
             void surface_reconstruction(const cv::cuda::GpuMat& depth_image, const cv::cuda::GpuMat& color_image,
                                         VolumeData& volume,
                                         const CameraParameters& cam_params, const float truncation_distance,

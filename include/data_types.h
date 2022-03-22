@@ -196,23 +196,34 @@ namespace kinectfusion {
          * Contains the internal data representation of one single frame as read by the depth camera
          * Consists of depth, smoothed depth and color pyramids as well as vertex and normal pyramids
          */
+        /********************************************************************************************
+         * @brief 内部数据结，用来将读取到的一帧深度图来做数据表示.
+         *        包含了深度、光滑深度、颜色金子塔和顶点图和法向图.
+         ********************************************************************************************/
         struct FrameData {
+            // 深度图
             std::vector<GpuMat> depth_pyramid;
+            // 光滑深度图
             std::vector<GpuMat> smoothed_depth_pyramid;
+            // 颜色金子塔图
             std::vector<GpuMat> color_pyramid;
-
+            // 顶点图（金字塔）
             std::vector<GpuMat> vertex_pyramid;
+            // 法向量图（金字塔）
             std::vector<GpuMat> normal_pyramid;
 
+            // 显示初始化
             explicit FrameData(const size_t pyramid_height) :
                     depth_pyramid(pyramid_height), smoothed_depth_pyramid(pyramid_height),
                     color_pyramid(pyramid_height), vertex_pyramid(pyramid_height), normal_pyramid(pyramid_height)
             { }
 
             // No copying
+            // 禁止拷贝构造函数
             FrameData(const FrameData&) = delete;
             FrameData& operator=(const FrameData& other) = delete;
 
+            // 这里不知道是什么意思（拷贝初始化?）
             FrameData(FrameData&& data) noexcept :
                     depth_pyramid(std::move(data.depth_pyramid)),
                     smoothed_depth_pyramid(std::move(data.smoothed_depth_pyramid)),
@@ -221,6 +232,7 @@ namespace kinectfusion {
                     normal_pyramid(std::move(data.normal_pyramid))
             { }
 
+            // 这里不知道是什么意思（拷贝初始化?）
             FrameData& operator=(FrameData&& data) noexcept
             {
                 depth_pyramid = std::move(data.depth_pyramid);
@@ -239,6 +251,9 @@ namespace kinectfusion {
         /**
          * @brief Surface
          * */
+        /*******************************
+         * @brief Surface 表面初始化
+         *******************************/
         struct ModelData {
             std::vector<GpuMat> vertex_pyramid;
             std::vector<GpuMat> normal_pyramid;
