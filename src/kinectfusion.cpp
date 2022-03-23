@@ -59,6 +59,8 @@ namespace kinectfusion {
                                                current_pose.inverse());
 
         // Step 4: Surface prediction
+        /// STEP4: 这里就是Surface Prediction，做RayCasting.
+        /// 这里需要注意一点的是：是会对不同金字塔层的图像都去反向投影，所以这里还是不一样的
         for (int level = 0; level < configuration.num_levels; ++level)
             internal::cuda::surface_prediction(volume, model_data.vertex_pyramid[level],
                                                model_data.normal_pyramid[level],

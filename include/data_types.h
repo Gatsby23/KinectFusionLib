@@ -317,8 +317,8 @@ namespace kinectfusion {
         /**************************************************************************
          * @brief 内在的global表现形式
          * 这个展示包含two volumes：
-         * （1） TSDF 体素：
-         * （2） 颜色 体素：
+         * （1） TSDF 体素：GPUMat值（在SurfaceReconstruct的时候更新）
+         * （2） 颜色 体素：GPUMat值（在SurfaceReconstruct的时候更新）
          * 实际上包含两块：
          * （1）volume大小: x,y,z大小
          * （2）Voxel Scale: 每个体素的大小
