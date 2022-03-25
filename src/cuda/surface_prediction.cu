@@ -10,6 +10,7 @@ namespace kinectfusion {
     namespace internal {
         namespace cuda {
 
+            // 这里应该是线性差值
             __device__ __forceinline__
             float interpolate_trilinearly(const Vec3fda& point, const PtrStepSz<short2>& volume,
                                           const int3& volume_size, const float voxel_scale)
@@ -69,6 +70,7 @@ namespace kinectfusion {
                                      const Eigen::Matrix<float, 3, 3, Eigen::DontAlign> rotation,
                                      const Vec3fda translation)
             {
+                // 这里blockIdx在哪里初始化，赋值呢？
                 const int x = blockIdx.x * blockDim.x + threadIdx.x;
                 const int y = blockIdx.y * blockDim.y + threadIdx.y;
 

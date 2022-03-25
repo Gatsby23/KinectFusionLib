@@ -77,6 +77,7 @@ namespace kinectfusion {
                         // 获得现在对应的tsdf对
                         short2 voxel_tuple = tsdf_volume.ptr(z * volume_size.y + y)[x];
 
+                        // DIVSHORTMAX这个是什么?
                         const float current_tsdf = static_cast<float>(voxel_tuple.x) * DIVSHORTMAX;
                         const int current_weight = voxel_tuple.y;
 

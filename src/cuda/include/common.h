@@ -12,11 +12,14 @@
 inline void __syncthreads() {}
 using blockDim = struct { int x; int y; };
 using threadIdx = struct { int x; int y; int z; };
+// 这里是数据结构->怎么做到全局索引的？
 using blockIdx = struct { int x; int y; int z; };
 #endif
 
 #include <data_types.h>
 
+
+// 这个表示的还是比较小的
 #define DIVSHORTMAX 0.0000305185f //1.f / SHRT_MAX;
 #define SHORTMAX 32767 //SHRT_MAX;
 #define MAX_WEIGHT 128
